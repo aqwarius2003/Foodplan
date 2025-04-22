@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Профиль - FoodPlan{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="card col-12 p-3 mb-5 foodplan__shadow">
+                <h4 class="foodplan__backButton">
+                    <strong><small><a href="{% url 'recipes:home' %}" class="link-secondary fw-light">На главную</a></small></strong>
+                </h4>
+                <h2 class="text-center"><strong>Личный кабинет</strong></h2>
+            </div>
+            
+            <div class="card col-12 col-md-2 p-3 mb-3 d-flex flex-column align-items-center foodplan__shadow">
+                <div class="position-relative">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" width="100" height="100" class="rounded-pill">
+                    {% else %}
+                        <img src="{% static 'img/test_avatar.png' %}" alt="{{ user.username }}" width="100" height="100" class="rounded-pill">
+                    {% endif %}
+                </div>
+                <h3 class="card-title text-center">{{ user.first_name|default:user.username }}</h3>
+                <div class="d-block">
+                    <a href="{% url 'users:logout' %}" class="btn btn-outline-success shadow-none foodplan_green foodplan__border_green">Выйти</a>
+                </div>
+            </div>
+
+            <div class="card col-12 col-md-10 p-3 mb-3 foodplan__shadow">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item foodplan__tab-item">
+                        <button id="tab1" class="btn shadow-none foodplan__tab-button active" data-bs-toggle="tab" data-bs-target="#data">Персональные данные</button>
+                    </li>
+                    <li class="nav-item foodplan__tab-item">
+                        <button id="tab2" class="btn shadow-none foodplan__tab-button" data-bs-toggle="tab" data-bs-target="#menu">Моё меню</button>
+                    </li>
+                    <li class="nav-item foodplan__tab-item flex-grow-1"></li>
+                </ul>
+                <div class="tab-content mt-2">
+                    <div class="tab-pane fade show active" id="data">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            {% if form.errors %}
+                                <div class="alert alert-danger">
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            {{ field.label }}: {{ error }}
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label">Имя пользователя</label>
+                                </div>
+                                {{ form.username }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">Имя</label>
+                                </div>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.profile_picture.id_for_label }}" class="form-label">Фото профиля</label>
+                                {{ form.profile_picture }}
+                            </div>
+                            <div class="d-block">
+                                <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green">Сохранить
+                                    изменения</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="menu">
+                        {% if active_subscriptions %}
+                            <div class="mb-4">
+                                <h3 class="foodplan_green">Ваши активные подписки</h3>
+                                <p>У вас есть доступ к следующим типам меню:</p>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                {% for subscription in active_subscriptions %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-header d-flex align-items-center">
+                                                <img src="{% static 'img/menu_'|add:subscription.menu_type|add:'.png' %}" alt="{{ subscription.get_menu_type_display }}" height="50" class="me-3">
+                                                <h4 class="mb-0">{{ subscription.get_menu_type_display }} меню</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <p>{{ subscription.get_menu_type_display }} меню на {{ subscription.duration }} месяц(ев).</p>
+                                                    <p class="text-muted">Активно до {{ subscription.end_date }}</p>
+                                                </div>
+                                                
+                                                <h6 class="card-subtitle mb-2 text-muted">Параметры:</h6>
+                                                <ul class="list-group list-group-flush mb-3">
+                                                    <li class="list-group-item d-flex justify-content-between">
+                                                        <span>Персоны:</span>
+                                                        <span>{{ subscription.persons_count }}</span>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between">
+                                                        <span>Завтраки:</span>
+                                                        <span>{% if subscription.include_breakfast %}Да{% else %}Нет{% endif %}</span>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between">
+                                                        <span>Обеды:</span>
+                                                        <span>{% if subscription.include_lunch %}Да{% else %}Нет{% endif %}</span>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between">
+                                                        <span>Ужины:</span>
+                                                        <span>{% if subscription.include_dinner %}Да{% else %}Нет{% endif %}</span>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between">
+                                                        <span>Десерты:</span>
+                                                        <span>{% if subscription.include_dessert %}Да{% else %}Нет{% endif %}</span>
+                                                    </li>
+                                                </ul>
+                                                
+                                                <a href="{% url 'recipes:menu_by_type' menu_type=subscription.menu_type %}" class="btn btn-outline-success shadow-none foodplan_green foodplan__border_green w-100">
+                                                    Перейти к меню
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="text-center mb-3">
+                                <a href="{% url 'subscriptions:create' %}" class="btn btn-success">Оформить дополнительную подписку</a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                У вас еще нет активной подписки. <a href="{% url 'subscriptions:create' %}" class="alert-link">Оформить подписку</a>.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем классы для стилизации элементов формы
+        const inputs = document.querySelectorAll('input:not([type="file"])');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+        
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+    });
+</script>
+{% endblock %} 
