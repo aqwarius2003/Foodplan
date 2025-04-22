@@ -83,6 +83,10 @@ foodplan/
 - Успешная оплата: `1111 1111 1111 1026`, дата: `12/24`, CVC: `000`
 - Неуспешная оплата: `5555 5555 5555 4444`, дата: `12/24`, CVC: `000`
 
+## Лицензия
+
+MIT 
+
 ## Подготовка к продакшену
 
 ### 1. Экспорт данных из базы данных
@@ -106,87 +110,153 @@ python manage.py dumpdata recipes > recipes_data.json
 tar -czf foodplan_media.tar.gz media
 ```
 
-### 2. Деплой на сервер
+### 2. Настройка GitHub и Docker
+
+1. Создайте репозиторий на GitHub
+2. Добавьте файлы проекта в репозиторий:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/aqwarius2003/Foodplan.git
+git push -u origin main
+```
+
+3. Убедитесь, что в репозитории есть все необходимые файлы:
+   - `Dockerfile.web` - Оптимизированный Dockerfile для Django приложения
+   - `docker-compose.yml` - Конфигурация Docker Compose
+   - `nginx/Dockerfile.nginx` - Dockerfile для Nginx
+   - `nginx/conf/` - Конфигурационные файлы для Nginx
+   - `scripts/` - Скрипты для обслуживания контейнеров
+   - `.env.example` - Пример переменных окружения
+
+### 3. Развертывание инфраструктуры
+
+#### Структура проекта для Docker
+
+```
+foodplan/
+├── Dockerfile.web          # Dockerfile для Django приложения
+├── docker-compose.yml      # Конфигурация Docker Compose
+├── scripts/                # Скрипты для обслуживания
+│   ├── backup.sh           # Скрипт для резервного копирования
+│   ├── entrypoint.sh       # Скрипт для запуска приложения
+│   └── init-healthcheck.py # Скрипт для инициализации проверки здоровья
+├── nginx/                  # Конфигурация Nginx
+│   ├── Dockerfile.nginx    # Dockerfile для Nginx
+│   └── conf/               # Конфигурационные файлы
+│       ├── default.conf    # Конфигурация виртуального хоста
+│       └── nginx.conf      # Основная конфигурация
+├── backups/                # Директория для резервных копий
+├── media/                  # Директория для медиа-файлов
+└── staticfiles/            # Директория для статических файлов
+```
+
+#### Деплой на сервер
 
 1. Клонируйте репозиторий на сервер:
 
 ```bash
-git clone [YOUR_GITHUB_REPO_URL](https://github.com/aqwarius2003/Foodplan.git)
+git clone https://github.com/aqwarius2003/Foodplan.git
 cd foodplan
 ```
 
-2. Создайте `.env` файл на основе `.env.example`:
+2. Создайте необходимые директории:
+
+```bash
+mkdir -p nginx/conf nginx/logs nginx/ssl scripts backups media staticfiles
+```
+
+3. Настройте переменные окружения:
 
 ```bash
 cp .env.example .env
-nano .env  # Отредактируйте файл с реальными значениями
+nano .env  # Отредактируйте переменные окружения
 ```
 
-3. Создайте директорию для Nginx:
+4. Сделайте скрипты исполняемыми:
 
 ```bash
-mkdir -p nginx
+chmod +x scripts/*.sh
 ```
 
-4. Запустите Docker Compose:
+5. Запустите инфраструктуру:
 
 ```bash
 docker-compose up -d
 ```
 
-### 3. Восстановление данных
+### 4. Мониторинг и обслуживание
 
-1. Загрузите архив с данными на сервер:
-
-```bash
-scp foodplan_data.json user@your_server:/path/to/foodplan/
-scp foodplan_media.tar.gz user@your_server:/path/to/foodplan/
-```
-
-2. Распакуйте медиафайлы:
+#### Мониторинг контейнеров
 
 ```bash
-tar -xzf foodplan_media.tar.gz
-```
+# Просмотр логов всех контейнеров
+docker-compose logs -f
 
-3. Загрузите данные в базу:
-
-```bash
-docker-compose exec web python manage.py loaddata foodplan_data.json
-```
-
-### 4. Создание суперпользователя
-
-```bash
-docker-compose exec web python manage.py createsuperuser
-```
-
-## Обновление сайта
-
-Для обновления сайта после внесения изменений:
-
-```bash
-git pull
-docker-compose down
-docker-compose up -d --build
-```
-
-## Мониторинг и обслуживание
-
-### Просмотр логов
-
-```bash
+# Просмотр логов конкретного контейнера
 docker-compose logs -f web
+docker-compose logs -f nginx
 ```
 
-### Резервное копирование
-
-Регулярно создавайте резервные копии данных:
+#### Ручное резервное копирование
 
 ```bash
-# Резервное копирование базы
-docker-compose exec db pg_dump -U postgres foodplan > backup_$(date +%Y%m%d).sql
+# Запуск контейнера для резервного копирования
+docker-compose run --rm backup
+```
 
-# Резервное копирование медиафайлов
-tar -czf media_backup_$(date +%Y%m%d).tar.gz media
-``` 
+#### Восстановление из резервной копии
+
+```bash
+# Восстановление базы данных
+cat backups/postgres/latest.sql.gz | gunzip | docker-compose exec -T db psql -U postgres -d foodplan
+
+# Восстановление медиа файлов
+tar -xzf backups/media/latest.tar.gz -C media
+```
+
+#### Проверка работоспособности
+
+```bash
+# Проверка всех сервисов
+docker-compose ps
+
+# Проверка эндпоинта здоровья
+curl https://your-domain.com/health/
+```
+
+### 5. Обновление приложения
+
+#### Безопасное обновление
+
+```bash
+# Получение последних изменений
+git pull
+
+# Перезапуск контейнеров с новой версией
+docker-compose down
+docker-compose build
+docker-compose up -d
+```
+
+#### Откат к предыдущей версии
+
+```bash
+# Откат к определенному коммиту
+git checkout <commit-hash>
+
+# Перезапуск контейнеров с предыдущей версией
+docker-compose down
+docker-compose build
+docker-compose up -d
+```
+
+### 6. Безопасность
+
+- SSL-сертификаты настроены и автоматически обновляются с помощью Let's Encrypt
+- Все контейнеры используют непривилегированных пользователей
+- Пароли и чувствительные данные хранятся в переменных окружения
+- Регулярное резервное копирование обеспечивает сохранность данных 

@@ -1,0 +1,71 @@
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+# Устанавливаем зависимости для сборки
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем poetry
+RUN pip install --no-cache-dir poetry==1.6.1
+
+# Копируем только файлы для установки зависимостей
+COPY pyproject.toml poetry.lock* ./
+
+# Настраиваем poetry для установки в систему без виртуального окружения
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi --no-dev
+
+# Многоэтапная сборка для уменьшения размера образа
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Устанавливаем необходимые зависимости для работы
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копируем установленные пакеты из builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Если не используется poetry, раскомментировать и использовать requirements.txt
+# COPY requirements.txt .
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем код приложения
+COPY . .
+
+# Создаем директории для статических и медиа файлов
+RUN mkdir -p /app/staticfiles /app/media
+
+# Создаем непривилегированного пользователя
+RUN groupadd -r app && useradd -r -g app app
+
+# Изменяем владельца директорий на пользователя app
+RUN chown -R app:app /app
+
+# Переключаемся на пользователя app
+USER app
+
+# Экспортируем переменные окружения
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+# Делаем entrypoint исполняемым
+RUN chmod +x /app/entrypoint.sh
+
+# Порт для gunicorn
+EXPOSE 8000
+
+# Endpoint для проверки здоровья
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8000/health/ || exit 1
+
+# Запускаем entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"] 
