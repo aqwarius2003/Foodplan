@@ -83,10 +83,6 @@ foodplan/
 - Успешная оплата: `1111 1111 1111 1026`, дата: `12/24`, CVC: `000`
 - Неуспешная оплата: `5555 5555 5555 4444`, дата: `12/24`, CVC: `000`
 
-## Лицензия
-
-MIT 
-
 ## Подготовка к продакшену
 
 ### 1. Экспорт данных из базы данных
@@ -110,34 +106,12 @@ python manage.py dumpdata recipes > recipes_data.json
 tar -czf foodplan_media.tar.gz media
 ```
 
-### 2. Настройка GitHub и Docker
-
-1. Создайте репозиторий на GitHub
-2. Добавьте файлы проекта в репозиторий:
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin YOUR_GITHUB_REPO_URL
-git push -u origin main
-```
-
-3. Убедитесь, что в репозитории есть все необходимые файлы:
-   - `Dockerfile`
-   - `docker-compose.yml`
-   - `entrypoint.sh`
-   - `requirements.txt`
-   - `nginx/nginx.conf`
-   - `.env.example`
-
-### 3. Деплой на сервер
+### 2. Деплой на сервер
 
 1. Клонируйте репозиторий на сервер:
 
 ```bash
-git clone YOUR_GITHUB_REPO_URL
+git clone [YOUR_GITHUB_REPO_URL](https://github.com/aqwarius2003/Foodplan.git)
 cd foodplan
 ```
 
@@ -160,7 +134,7 @@ mkdir -p nginx
 docker-compose up -d
 ```
 
-### 4. Восстановление данных
+### 3. Восстановление данных
 
 1. Загрузите архив с данными на сервер:
 
@@ -181,7 +155,7 @@ tar -xzf foodplan_media.tar.gz
 docker-compose exec web python manage.py loaddata foodplan_data.json
 ```
 
-### 5. Создание суперпользователя
+### 4. Создание суперпользователя
 
 ```bash
 docker-compose exec web python manage.py createsuperuser
