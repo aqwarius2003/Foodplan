@@ -130,7 +130,7 @@ git push -u origin main
    - `nginx/Dockerfile.nginx` - Dockerfile для Nginx
    - `nginx/conf/` - Конфигурационные файлы для Nginx
    - `scripts/` - Скрипты для обслуживания контейнеров
-   - `.env.example` - Пример переменных окружения
+   - `.env_example` - Пример переменных окружения
 
 ### 3. Развертывание инфраструктуры
 
@@ -172,7 +172,7 @@ mkdir -p nginx/conf nginx/logs nginx/ssl scripts backups media staticfiles
 3. Настройте переменные окружения:
 
 ```bash
-cp .env.example .env
+cp .env_example .env
 nano .env  # Отредактируйте переменные окружения
 ```
 
@@ -277,13 +277,13 @@ docker network create traefik-public
 
 2. Склонируйте репозиторий:
 ```bash
-git clone https://github.com/yourusername/foodplan.git
+git clone https://github.com/aqwarius2003/foodplan.git
 cd foodplan
 ```
 
-3. Создайте файл .env на основе .env.example:
+3. Создайте файл .env на основе .env_example:
 ```bash
-cp .env.example .env
+cp .env_example .env
 ```
 
 4. Настройте переменные окружения в .env:

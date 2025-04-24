@@ -7,12 +7,12 @@ services:
       dockerfile: Dockerfile
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.foodplan.rule=Host(`foodplan.yourdomain.com`)"
+      - "traefik.http.routers.foodplan.rule=Host(`${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.foodplan.entrypoints=websecure"
       - "traefik.http.routers.foodplan.tls=true"
       - "traefik.http.services.foodplan.loadbalancer.server.port=8000"
     networks:
-      - traefik-public
+      - ${TRAEFIK_NETWORK}
       - foodplan-network
     depends_on:
       - db
@@ -23,9 +23,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=foodplan
-      - POSTGRES_USER=foodplan
-      - POSTGRES_PASSWORD=foodplan
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
       - foodplan-network
 
