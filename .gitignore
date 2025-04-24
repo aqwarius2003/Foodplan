@@ -46,3 +46,6 @@ Thumbs.db
 # Project specific
 .env
 .cursor/
+staticfiles/
+temp_files_add_to_gitignore/
+/static/

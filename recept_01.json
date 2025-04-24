@@ -1,0 +1,144 @@
+{
+  "recipes": [
+    {
+      "title": "Курица Пикката",
+      "description": "Классическое итальянское блюдо с курицей в лимонно-каперсовом соусе.",
+      "cooking_time": 30,
+      "calories": 400,
+      "category": "dinner",
+      "menu_type": "classic",
+      "image": "https://www.simplyrecipes.com/thmb/1.jpg",
+      "instructions": "1. Обжарьте куриные грудки до золотистой корочки.\n2. Добавьте каперсы, лимонный сок и белое вино.\n3. Тушите до готовности соуса.\n4. Подавайте с гарниром по вкусу.",
+      "ingredients": [
+        {
+          "ingredient_name": "Куриное филе",
+          "amount": 300
+        },
+        {
+          "ingredient_name": "Каперсы",
+          "amount": 30
+        },
+        {
+          "ingredient_name": "Лимонный сок",
+          "amount": 50
+        },
+        {
+          "ingredient_name": "Белое вино",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "title": "Говядина Веллингтон",
+      "description": "Праздничное блюдо из говядины, запечённой в слоёном тесте с грибами.",
+      "cooking_time": 90,
+      "calories": 650,
+      "category": "dinner",
+      "menu_type": "classic",
+      "image": "https://www.foodnetwork.com/thmb/2.jpg",
+      "instructions": "1. Обжарьте говяжью вырезку до корочки.\n2. Оберните её в грибной дюксель и слоёное тесто.\n3. Запекайте до золотистой корочки.\n4. Подавайте с соусом по вкусу.",
+      "ingredients": [
+        {
+          "ingredient_name": "Говяжья вырезка",
+          "amount": 500
+        },
+        {
+          "ingredient_name": "Грибы",
+          "amount": 200
+        },
+        {
+          "ingredient_name": "Слоёное тесто",
+          "amount": 300
+        },
+        {
+          "ingredient_name": "Яйцо",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "title": "Курица и клецки",
+      "description": "Домашнее блюдо с курицей и мягкими клецками в бульоне.",
+      "cooking_time": 60,
+      "calories": 500,
+      "category": "dinner",
+      "menu_type": "classic",
+      "image": "https://www.simplyrecipes.com/thmb/3.jpg",
+      "instructions": "1. Отварите курицу с овощами до готовности.\n2. Приготовьте тесто для клецек.\n3. Добавьте клецки в бульон и варите до готовности.\n4. Подавайте горячим.",
+      "ingredients": [
+        {
+          "ingredient_name": "Курица",
+          "amount": 500
+        },
+        {
+          "ingredient_name": "Морковь",
+          "amount": 100
+        },
+        {
+          "ingredient_name": "Сельдерей",
+          "amount": 100
+        },
+        {
+          "ingredient_name": "Мука",
+          "amount": 200
+        }
+      ]
+    },
+    {
+      "title": "Тавче гравче",
+      "description": "Македонское блюдо из фасоли, запечённой с колбасками и специями.",
+      "cooking_time": 110,
+      "calories": 550,
+      "category": "dinner",
+      "menu_type": "classic",
+      "image": "https://apnews.com/thmb/4.jpg",
+      "instructions": "1. Обжарьте лук, перец и чеснок.\n2. Добавьте фасоль и специи.\n3. Запекайте с колбасками до готовности.\n4. Подавайте с хлебом.",
+      "ingredients": [
+        {
+          "ingredient_name": "Фасоль",
+          "amount": 400
+        },
+        {
+          "ingredient_name": "Колбаски",
+          "amount": 300
+        },
+        {
+          "ingredient_name": "Лук",
+          "amount": 150
+        },
+        {
+          "ingredient_name": "Красный перец",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "title": "Классический чизкейк",
+      "description": "Нежный чизкейк на основе сливочного сыра с хрустящей корочкой.",
+      "cooking_time": 90,
+      "calories": 450,
+      "category": "dessert",
+      "menu_type": "classic",
+      "image": "https://www.allrecipes.com/thmb/5.jpg",
+      "instructions": "1. Приготовьте основу из печенья и масла.\n2. Взбейте сливочный сыр с сахаром и яйцами.\n3. Выпекайте до готовности.\n4. Охладите и подавайте.",
+      "ingredients": [
+        {
+          "ingredient_name": "Сливочный сыр",
+          "amount": 500
+        },
+        {
+          "ingredient_name": "Сахар",
+          "amount": 150
+        },
+        {
+          "ingredient_name": "Яйца",
+          "amount": 3
+        },
+        {
+          "ingredient_name": "Песочное печенье",
+          "amount": 200
+        }
+      ]
+    }
+  ]
+}

@@ -1,20 +1,19 @@
-FROM python:3.8-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
+# Установка зависимостей
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Копирование кода приложения
 COPY . .
 
-# Собираем статические файлы
-RUN python manage.py collectstatic --noinput
+# Создание непривилегированного пользователя
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
 
-# Делаем entrypoint исполняемым
-RUN chmod +x entrypoint.sh
+USER appuser
 
-EXPOSE 8000
-
-# Используем entrypoint для запуска сервера
-CMD ["./entrypoint.sh"] 
+# Запуск приложения
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"] 
